@@ -24,33 +24,42 @@ export default function Contact() {
   const onSubmit = async (data: FormData) => {
     setStatus("submitting");
     try {
+      // 1. Send email directly to the provider
+      await fetch("https://formsubmit.co/ajax/nchedo.nnaji24@gmail.com", {
+        method: "POST",
+        headers: { 
+            "Content-Type": "application/json",
+            "Accept": "application/json"
+        },
+        body: JSON.stringify({
+            name: data.name,
+            email: data.email,
+            message: data.message,
+            _subject: "New Contact Form Message from Portfolio!"
+        })
+      }).catch(err => console.error("FormSubmit Error:", err));
+
+      // 2. Save to Database for Admin Dashboard
       if (hasSupabase) {
         const { error } = await supabase.from("messages").insert([
           { name: data.name, email: data.email, message: data.message, date: new Date().toISOString() }
         ]);
-        if (error) throw error;
-        
-        setStatus("success");
-        reset();
-        setTimeout(() => setStatus("idle"), 3000);
-        return;
+        if (error) console.error("Supabase Error:", error);
+      } else {
+        // Fallback to Express endpoint
+        await fetch("/api/messages", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data)
+        }).catch(err => console.error("API Error:", err));
       }
       
-      // Fallback to Express endpoint
-      const res = await fetch("/api/messages", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data)
-      });
-      if (res.ok) {
-        setStatus("success");
-        reset();
-        setTimeout(() => setStatus("idle"), 3000);
-      } else {
-        setStatus("error");
-      }
+      setStatus("success");
+      reset();
+      setTimeout(() => setStatus("idle"), 3000);
     } catch {
       setStatus("error");
+      setTimeout(() => setStatus("idle"), 3000);
     }
   };
 

@@ -1,5 +1,6 @@
 import express from "express";
 import path from "path";
+import "dotenv/config";
 import { createServer as createViteServer } from "vite";
 import cookieParser from "cookie-parser";
 import jwt from "jsonwebtoken";
@@ -32,8 +33,8 @@ let messages: any[] = [];
 let resumeUrl = "/resume.pdf";
 
 const JWT_SECRET = process.env.JWT_SECRET || "super_secret_devops_key_123";
-const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "admin@example.com";
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "admin";
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "nchedo.nnaji24@gmail.com";
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "Flower1988#";
 
 async function startServer() {
   const app = express();
